@@ -1,0 +1,153 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'idea'
+}
+
+version = '1.0.0-SNAPSHOT'
+
+description = "os-native-e2e-tests"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+buildDir=System.getProperty("user.dir")+File.separator+"build"
+
+//repositories {
+//    maven { url "http://insecure.repo1.maven.org/maven2/" }
+//}
+
+test {
+    useTestNG()
+    maxHeapSize = '1G'
+    /*
+     * Setup environment variables
+     */
+    def temp=System.getenv("bamboo_tags")
+
+    if (temp!=null){
+        tags=temp
+    }
+    environment "tags",tags
+    /*
+     * Override existing tags to run
+     */
+    if (!tags.isEmpty()) {
+        System.properties.setProperty("cucumber.options", String.format("--tags '%s and not %s'",tags,"@Manual"))
+        println("Cucumber Options set to $tags")
+    }
+    systemProperties = System.properties
+    beforeSuite {
+        descriptor -> "Running automated tests"
+
+    }
+    /*
+     * After test run
+     */
+    afterSuite {
+        descriptor, result ->
+            if (descriptor.parent == null) {
+//                println "--------------------- Clean Up -------------------------------------"
+//                println "--------------------- $buildDir -------------------------------------"
+//                def gradle = project.getGradle()
+//                new File("${gradle.getGradleUserHomeDir().getAbsolutePath()}/daemon/${gradle.getGradleVersion()}").deleteDir()
+            }
+    }
+}
+
+dependencies {
+    def selenium_version = '4.0.0-alpha-1'
+    def cucumber_version = '6.6.1'
+    def spring_version='5.2.0.RELEASE'
+    def spring_boot_version='2.2.5.RELEASE'
+
+    def cucumber_reporting = '3.7.0'
+    def mongo_java_driver = '3.11.0'
+    def restassured_version='4.2.0'
+    def jongo_version = '1.3.0'
+    def logback_version = '1.2.3'
+    def apache_pdfbox_version='2.0.5'
+    def apache_poi_version = '4.1.2'
+    def eyes_selenium_java='3.165.0'
+    /*
+     * Selenium dependencies
+     */
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: selenium_version
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-server', version: selenium_version
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-remote-driver', version: selenium_version
+    compile 'io.github.bonigarcia:webdrivermanager:3.3.0'
+    /*
+     * Cucumber dependencies
+     */
+    testCompile('net.masterthought:cucumber-reporting:' + cucumber_reporting) {
+        exclude group: 'com.fasterxml.jackson.core'
+    }
+    compile group: 'io.cucumber', name: 'cucumber-core', version: cucumber_version
+    compile group: 'io.cucumber', name: 'cucumber-java', version: cucumber_version
+    compile group: 'io.cucumber', name: 'cucumber-testng', version: cucumber_version
+    compile group: 'io.cucumber', name: 'cucumber-spring', version: cucumber_version
+    /*
+    * spring dependencies
+    */
+    compile group: 'org.springframework', name: 'spring-web', version: spring_version
+    compile group: 'org.springframework', name: 'spring-webmvc', version: spring_version
+    compile group: 'org.springframework', name: 'spring-context-support', version: spring_version
+    compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: spring_boot_version
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: spring_boot_version
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: spring_boot_version, ext: 'pom'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: spring_boot_version
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: spring_boot_version
+    /*
+     * Mongo dependencies
+     */
+    compile group: 'org.mongodb', name: 'mongo-java-driver', version: mongo_java_driver
+    compile group: 'org.jongo', name: 'jongo', version: jongo_version
+    /*
+     * Logging
+     */
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
+    /*
+     * Excel dependencies
+     */
+    compile 'com.github.ozlerhakan:poiji:1.20.0'
+    compile group: 'org.apache.poi', name: 'poi', version: apache_poi_version
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: apache_poi_version
+    /*
+     * Applitools dependencies
+     */
+    compile group: 'com.applitools', name: 'eyes-selenium-java3', version: eyes_selenium_java
+    /*
+     * Other dependencies
+     */
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    compile group: 'com.github.javafaker', name: 'javafaker', version: '1.0.2'
+    compile group: 'junit', name: 'junit', version: '4.13'
+    compile 'org.apache.commons:commons-lang3:3.1'
+    compile 'org.apache.httpcomponents:httpcore:4.4.4'
+    compile 'org.apache.velocity:velocity:1.6.3'
+    compile 'org.apache.commons:commons-configuration2:2.0'
+    compile 'commons-beanutils:commons-beanutils:1.9.2'
+    compile group: 'org.json', name: 'json', version: '20190722'
+    compile 'org.jsoup:jsoup:1.7.2'
+    compile 'org.xmlunit:xmlunit-core:2.6.2'
+    compile 'org.xmlunit:xmlunit-matchers:2.6.2'
+    compile group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.3'
+
+    compile('com.microsoft.sqlserver:mssql-jdbc:6.1.0.jre8') {
+        exclude group: 'com.sun.jersey'
+    }
+    /*
+     * Rest assured dependencies
+     */
+    compile group: 'io.rest-assured', name: 'spring-mock-mvc', version: restassured_version
+    compile group: 'io.rest-assured', name: 'json-path', version: restassured_version
+    compile group: 'io.rest-assured', name: 'xml-path', version: restassured_version
+    compile group: 'io.rest-assured', name: 'json-schema-validator', version: restassured_version
+
+    compile 'org.projectlombok:lombok:1.18.6'
+    annotationProcessor 'org.projectlombok:lombok:1.18.6'
+    compile group: 'org.osgi', name: 'org.osgi.framework', version: '1.9.0'
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.5'
+    compile group: 'org.apache.pdfbox', name: 'pdfbox-tools', version: '2.0.5'
+
+
+}
