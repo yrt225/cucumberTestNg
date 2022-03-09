@@ -141,7 +141,7 @@ public class RunCukeTest extends AbstractTestNGCucumberTests {
                 } catch (NullPointerException exp) {
                     log.error("Image not found");
                 } catch (Exception exp) {
-                    log.error(exp.getMessage());
+      //123              log.error(exp.getMessage());
                 }
             }
             /*
@@ -188,7 +188,7 @@ public class RunCukeTest extends AbstractTestNGCucumberTests {
                         .thenReturn().getBody().prettyPrint();
             }
             log.info("***************************Completed qTest Upload*****************************************************");
-
+//COde modification
         } catch (Exception exp) {
             exp.printStackTrace();
         }
