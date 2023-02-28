@@ -11,7 +11,7 @@ public class Constants {
      */
     public static final String FF_TEST_DATA_COLLECTION = TestRunConfig.PROJECT + "_test_data";
 
-
+    //THis is for Git operations
     public static class RuntimeEnvironment {
         public static final String GRID = "GRID";0
       
